@@ -1,0 +1,39 @@
+{
+  "name": "mcp-webview",
+  "version": "1.0.0",
+  "description": "MCP 工具用于编译 WebView2 和 Chrome 浏览器",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev:server": "ts-node --esm src/server.ts",
+    "dev:client": "ts-node --esm src/client.ts",
+    "test:webview": "ts-node --esm src/client.ts",
+    "test:chrome": "ts-node --esm src/client.ts chrome",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "keywords": [
+    "mcp",
+    "webview2",
+    "chrome",
+    "ninja",
+    "build"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "@types/node": "^22.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  }
+}
