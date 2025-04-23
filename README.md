@@ -12,8 +12,9 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/mcp-webview.git
-cd mcp-webview
+git clone https://github.com/xu-ms/build-mcp.git
+
+cd build-mcp
 
 # 安装依赖
 npm install
@@ -27,7 +28,18 @@ npm install
 # 编译 TypeScript 代码
 npm run build
 ```
+### ecline_mcp_settings.json
+```
+    "compile-mcp": {
+      "command": "node path",
+      "args": [
+        "/pathto/dist/server.js"
+      ],
+      "disabled": false,
+      "timeout": 3600
+    }
 
+```
 
 
 ### 测试客户端
@@ -41,16 +53,4 @@ npm run test:chrome
 
 # 或者直接运行客户端（开发模式）
 npm run dev:client
-```
-
-```
-    "compile-cmcp": {
-      "command": "node",
-      "args": [
-        "/pathto/dist/server.js"
-      ],
-      "disabled": false,
-      "timeout": 3600,
-    },
-
 ```

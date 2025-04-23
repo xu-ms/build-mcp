@@ -41,7 +41,7 @@ function loadShellEnv(): Record<string, string> {
           }
         }
       } catch (error) {
-        console.warn('无法读取 .zprofile 文件:', error);
+        console.warn('Failed to read .zprofile file:', error);
       }
     }
 
@@ -67,11 +67,35 @@ function loadShellEnv(): Record<string, string> {
           }
         }
       } catch (error) {
-        console.warn('无法读取 .zshrc 文件:', error);
+        console.warn('Failed to read .zshrc file:', error);
+      }
+    }
+
+    // 检查 PATH 中是否包含 depot_tools
+    const currentPath = env.PATH || process.env.PATH || '';
+    if (!currentPath.includes('depot_tools')) {
+      // 在用户目录下搜索 depot_tools
+      const possibleDepotToolsPaths = [
+        join(homedir(), 'depot_tools'),
+        join(homedir(), 'src', 'depot_tools'),
+        join(homedir(), 'Edge', 'depot_tools'),
+        join(homedir(), 'projects', 'depot_tools'),
+        join(homedir(), 'code', 'depot_tools'),
+        join(homedir(), 'dev', 'depot_tools')
+      ];
+
+      for (const path of possibleDepotToolsPaths) {
+        if (existsSync(path)) {
+          console.log(`Found depot_tools at: ${path}`);
+          // 将 depot_tools 添加到 PATH
+          env.PATH = `${path}:${currentPath}`;
+          env.PATH = `${path}/scripts:${currentPath}`;
+          break;
+        }
       }
     }
   } catch (error) {
-    console.warn('无法加载环境配置:', error);
+    console.warn('Failed to load environment configuration:', error);
   }
   
   return env;
@@ -99,10 +123,6 @@ function spawnPromise(command: string, args: string[], options: any): Promise<{ 
     fullCommand += 'echo "HOME 目录: $HOME"; ';
     fullCommand += 'echo "===== PATH ====="; ';
     fullCommand += 'echo $PATH | tr ":" "\\n"; ';
-    fullCommand += 'echo "=== Python 信息 ==="; ';
-    fullCommand += 'which python || echo "找不到 python"; ';
-    fullCommand += 'which python3 || echo "找不到 python3"; ';
-    fullCommand += 'echo "================="; ';
     
     // 先加载 zprofile 和 zshrc
     fullCommand += 'source ~/.zprofile 2>/dev/null || true; ';
@@ -183,7 +203,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [{
       name: "compile",
-      description: "Compile WebView2 or Edge browser using autoninja",
+      description: "Compile WebView2 or Edge browser and other targets using autoninja",
       inputSchema: {
         type: "object",
         properties: {
@@ -197,8 +217,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           target: { 
             type: "string", 
-            description: "Build target, webview2 uses embedded_browser_webview, Edge uses chrome",
-            enum: ["embedded_browser_webview", "chrome"]
+            description: "Build target, webview2 uses embedded_browser_webview, Edge uses chrome, other targets uses autoninja",
           }
         },
         required: ["workDir", "buildPath", "target"]
